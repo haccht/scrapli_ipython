@@ -104,7 +104,7 @@ class ScrapliMagics(Magics):
     @magic_arguments.argument('-p', '--privilege',  type=str, default='', nargs='?')
     @magic_arguments.argument('var', type=str, default='', nargs='?')
     def configure(self, line, cell):
-        args = magic_arguments.parse_argstring(self.cmd, line)
+        args = magic_arguments.parse_argstring(self.configure, line)
         self._connection.get_prompt()
         resp = self._connection.send_configs(
                 configs=self._format(cell),
