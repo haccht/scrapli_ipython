@@ -101,7 +101,7 @@ class ScrapliMagics(Magics):
 
     @cell_magic
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('-p', '--privilege',  type=str, default='', nargs='?')
+    @magic_arguments.argument('-p', '--privilege', type=str, default='', nargs='?')
     @magic_arguments.argument('var', type=str, default='', nargs='?')
     def configure(self, line, cell):
         args = magic_arguments.parse_argstring(self.configure, line)

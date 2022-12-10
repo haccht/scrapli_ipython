@@ -6,6 +6,7 @@ setup(
     install_requires=[
         "scrapli[ssh2]",
         "ntc_templates",
+        "jinja2",
     ],
     author="haccht",
     description="scrapli extention for ipython",
