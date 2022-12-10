@@ -91,19 +91,25 @@ class ScrapliMagics(Magics):
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('var', type=str, default='', nargs='?')
     def cmd(self, line, cell):
-        self._connection.get_prompt()
-        resp = self._connection.send_commands(self._format(cell), timeout_ops=0)
         args = magic_arguments.parse_argstring(self.cmd, line)
+        self._connection.get_prompt()
+        resp = self._connection.send_commands(
+                commands=self._format(cell),
+                timeout_ops=0)
         if args.var:
             get_ipython().user_ns[args.var] = resp
 
     @cell_magic
     @magic_arguments.magic_arguments()
+    @magic_arguments.argument('-p', '--privilege',  type=str, default='', nargs='?')
     @magic_arguments.argument('var', type=str, default='', nargs='?')
     def configure(self, line, cell):
-        self._connection.get_prompt()
-        resp = self._connection.send_configs(self._format(cell), timeout_ops=0)
         args = magic_arguments.parse_argstring(self.cmd, line)
+        self._connection.get_prompt()
+        resp = self._connection.send_configs(
+                configs=self._format(cell),
+                privilege_level=args.privilege,
+                timeout_ops=0)
         if args.var:
             get_ipython().user_ns[args.var] = resp
 
@@ -114,7 +120,7 @@ class ChannelLogIO(BytesIO):
 
 
 # monkey-patch scrapli.response.MultiResponse
-def result_mp(self, separator: str ="-- \n") -> str:
+def result_mp(self, separator: str = "-- \n") -> str:
     data = [f"{r.channel_input}\n{r.result}\n" for r in self.data]
     return separator.join(data)
 
