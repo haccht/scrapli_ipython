@@ -17,12 +17,16 @@ class ScrapliMagics(Magics):
         self._platform = ''
         self._connection = None
 
-    def _connect(self, host, platform, transport, timeout, **kwargs):
+    def _connect(self, host, platform, username, password, transport, timeout, **kwargs):
         timeout  = timeout  or self._timeout
         platform = platform or self._platform
 
         if not platform:
             raise Exception(f"No platform specified")
+        if not username:
+            username = input("Username:")
+        if not password:
+            password = getpass("Password:")
         if transport not in ["ssh2", "telnet"]:
             raise Exception(f"Unknown transport: {transport}")
 
@@ -30,8 +34,8 @@ class ScrapliMagics(Magics):
                 host=host,
                 platform=platform,
                 transport=transport,
-                auth_username=input("Username:"),
-                auth_password=getpass("Password:"),
+                auth_username=username,
+                auth_password=password,
                 auth_strict_key=False,
                 timeout_socket=timeout,
                 timeout_transport=timeout,
@@ -43,29 +47,35 @@ class ScrapliMagics(Magics):
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('-t', '--timeout',   type=int, default=30, nargs='?')
     @magic_arguments.argument('-p', '--platform',  type=str, default='', nargs='?')
+    @magic_arguments.argument('-U', '--username', type=str, default='', nargs='?')
+    @magic_arguments.argument('-P', '--password', type=str, default='', nargs='?')
     @magic_arguments.argument('-T', '--transport', type=str, default='ssh2')
     @magic_arguments.argument('host', type=str)
     def scrapli(self, line):
         args = magic_arguments.parse_argstring(self.scrapli, line)
-        self._connect(args.host, args.platform, args.transport, args.timeout)
+        self._connect(args.host, args.platform, args.username, args.password, args.transport, args.timeout)
 
     @line_magic
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('-t', '--timeout',  type=int, default=30, nargs='?')
     @magic_arguments.argument('-p', '--platform', type=str, default='', nargs='?')
+    @magic_arguments.argument('-U', '--username', type=str, default='', nargs='?')
+    @magic_arguments.argument('-P', '--password', type=str, default='', nargs='?')
     @magic_arguments.argument('host', type=str)
     def ssh(self, line):
         args = magic_arguments.parse_argstring(self.ssh, line)
-        self._connect(args.host, args.platform, "ssh2", args.timeout)
+        self._connect(args.host, args.platform, args.username, args.password, "ssh2", args.timeout)
 
     @line_magic
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('-t', '--timeout',  type=int, default=30, nargs='?')
     @magic_arguments.argument('-p', '--platform', type=str, default='', nargs='?')
+    @magic_arguments.argument('-U', '--username', type=str, default='', nargs='?')
+    @magic_arguments.argument('-P', '--password', type=str, default='', nargs='?')
     @magic_arguments.argument('host', type=str)
     def telnet(self, line):
         args = magic_arguments.parse_argstring(self.telnet, line)
-        self._connect(args.host, args.platform, "telnet", args.timeout)
+        self._connect(args.host, args.platform, args.username, args.password, "telnet", args.timeout)
 
     @line_magic
     def timeout(self, line):
