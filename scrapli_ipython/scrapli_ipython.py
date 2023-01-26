@@ -27,6 +27,8 @@ class ScrapliMagics(Magics):
             username = input("Username:")
         if not password:
             password = getpass("Password:")
+        if transport == "ssh":
+            transport = "ssh2"
         if transport not in ["ssh2", "telnet"]:
             raise Exception(f"Unknown transport: {transport}")
 
@@ -49,7 +51,7 @@ class ScrapliMagics(Magics):
     @magic_arguments.argument('-p', '--platform',  type=str, default='', nargs='?')
     @magic_arguments.argument('-U', '--username', type=str, default='', nargs='?')
     @magic_arguments.argument('-P', '--password', type=str, default='', nargs='?')
-    @magic_arguments.argument('-T', '--transport', type=str, default='ssh2')
+    @magic_arguments.argument('-T', '--transport', type=str, default='ssh')
     @magic_arguments.argument('host', type=str)
     def scrapli(self, line):
         args = magic_arguments.parse_argstring(self.scrapli, line)
@@ -64,7 +66,7 @@ class ScrapliMagics(Magics):
     @magic_arguments.argument('host', type=str)
     def ssh(self, line):
         args = magic_arguments.parse_argstring(self.ssh, line)
-        self._connect(args.host, args.platform, args.username, args.password, "ssh2", args.timeout)
+        self._connect(args.host, args.platform, args.username, args.password, "ssh", args.timeout)
 
     @line_magic
     @magic_arguments.magic_arguments()
@@ -99,18 +101,20 @@ class ScrapliMagics(Magics):
 
     @cell_magic
     @magic_arguments.magic_arguments()
+    @magic_arguments.argument('-t', '--timeout', type=int, default=0, nargs='?')
     @magic_arguments.argument('var', type=str, default='', nargs='?')
     def cmd(self, line, cell):
         args = magic_arguments.parse_argstring(self.cmd, line)
         self._connection.get_prompt()
         resp = self._connection.send_commands(
                 commands=self._format(cell),
-                timeout_ops=0)
+                timeout_ops=args.timeout)
         if args.var:
             get_ipython().user_ns[args.var] = resp
 
     @cell_magic
     @magic_arguments.magic_arguments()
+    @magic_arguments.argument('-t', '--timeout', type=int, default=0, nargs='?')
     @magic_arguments.argument('-p', '--privilege', type=str, default='', nargs='?')
     @magic_arguments.argument('var', type=str, default='', nargs='?')
     def configure(self, line, cell):
@@ -119,7 +123,7 @@ class ScrapliMagics(Magics):
         resp = self._connection.send_configs(
                 configs=self._format(cell),
                 privilege_level=args.privilege,
-                timeout_ops=0)
+                timeout_ops=args.timeout)
         if args.var:
             get_ipython().user_ns[args.var] = resp
 
