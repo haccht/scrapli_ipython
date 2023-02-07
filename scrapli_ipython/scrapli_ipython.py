@@ -20,13 +20,12 @@ class ScrapliMagics(Magics):
     def _connect(self, host, platform, username, password, transport, timeout, **kwargs):
         timeout  = timeout  or self._timeout
         platform = platform or self._platform
+        username = username or input("Username:")
+        password = password or getpass("Password:")
 
         if not platform:
             raise Exception(f"No platform specified")
-        if not username:
-            username = input("Username:")
-        if not password:
-            password = getpass("Password:")
+
         if transport == "ssh":
             transport = "ssh2"
         if transport not in ["ssh2", "telnet"]:
@@ -47,11 +46,11 @@ class ScrapliMagics(Magics):
 
     @line_magic
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('-t', '--timeout',   type=int, default=30, nargs='?')
-    @magic_arguments.argument('-p', '--platform',  type=str, default='', nargs='?')
-    @magic_arguments.argument('-U', '--username', type=str, default='', nargs='?')
-    @magic_arguments.argument('-P', '--password', type=str, default='', nargs='?')
-    @magic_arguments.argument('-T', '--transport', type=str, default='ssh')
+    @magic_arguments.argument('-t', '--timeout', type=int, nargs='?')
+    @magic_arguments.argument('-p', '--platform', type=str, nargs='?')
+    @magic_arguments.argument('-U', '--username', type=str, nargs='?')
+    @magic_arguments.argument('-P', '--password', type=str, nargs='?')
+    @magic_arguments.argument('-T', '--transport', type=str, choices=['ssh', 'telnet'], default='ssh')
     @magic_arguments.argument('host', type=str)
     def scrapli(self, line):
         args = magic_arguments.parse_argstring(self.scrapli, line)
@@ -59,10 +58,10 @@ class ScrapliMagics(Magics):
 
     @line_magic
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('-t', '--timeout',  type=int, default=30, nargs='?')
-    @magic_arguments.argument('-p', '--platform', type=str, default='', nargs='?')
-    @magic_arguments.argument('-U', '--username', type=str, default='', nargs='?')
-    @magic_arguments.argument('-P', '--password', type=str, default='', nargs='?')
+    @magic_arguments.argument('-t', '--timeout', type=int, nargs='?')
+    @magic_arguments.argument('-p', '--platform', type=str, nargs='?')
+    @magic_arguments.argument('-U', '--username', type=str, nargs='?')
+    @magic_arguments.argument('-P', '--password', type=str, nargs='?')
     @magic_arguments.argument('host', type=str)
     def ssh(self, line):
         args = magic_arguments.parse_argstring(self.ssh, line)
@@ -70,10 +69,10 @@ class ScrapliMagics(Magics):
 
     @line_magic
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('-t', '--timeout',  type=int, default=30, nargs='?')
-    @magic_arguments.argument('-p', '--platform', type=str, default='', nargs='?')
-    @magic_arguments.argument('-U', '--username', type=str, default='', nargs='?')
-    @magic_arguments.argument('-P', '--password', type=str, default='', nargs='?')
+    @magic_arguments.argument('-t', '--timeout', type=int, nargs='?')
+    @magic_arguments.argument('-p', '--platform', type=str, nargs='?')
+    @magic_arguments.argument('-U', '--username', type=str, nargs='?')
+    @magic_arguments.argument('-P', '--password', type=str, nargs='?')
     @magic_arguments.argument('host', type=str)
     def telnet(self, line):
         args = magic_arguments.parse_argstring(self.telnet, line)
