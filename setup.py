@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="scrapli_ipython",
-    version="0.0.6",
+    version="0.0.9",
     install_requires=[
         "scrapli[ssh2]",
         "ntc_templates",
